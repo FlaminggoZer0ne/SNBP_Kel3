@@ -60,8 +60,6 @@ function Simulasi({ email }: SimulasiProps) {
           <h2>Hasil Simulasi</h2>
           <p>Skor simulasi: <strong>{hasil.skor.toFixed(2)}</strong></p>
           <p>Kategori peluang: <strong>{hasil.kategori}</strong></p>
-          <p>Pilihan Prodi 1: {hasil.prodi1 || '-'}</p>
-          <p>Pilihan Prodi 2: {hasil.prodi2 || '-'}</p>
         </div>
       )}
     </div>
