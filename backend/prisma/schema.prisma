@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User untuk auth (siswa & admin)
+model User {
+  id        Int           @id @default(autoincrement())
+  email     String        @unique
+  password  String
+  role      UserRole      @default(SISWA)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  siswaProfile SiswaProfile?
+}
+
+model SiswaProfile {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    Int        @unique
+
+  nama      String
+  sekolah   String?
+  nisn      String?     @unique
+  tempatLahir String?
+  tanggalLahir DateTime?
+  npsn        String?
+  namaOrangTua String?
+  alamat      String?
+  kabupaten   String?
+  provinsi    String?
+
+  eligibilityStatus EligibilityStatus @default(MENUNGGU_BK)
+
+  nilaiRapor  NilaiRapor[]
+  prestasi    Prestasi[]
+  pendaftarans Pendaftaran[]
+  dokumen     Dokumen[]
+}
+
+model NilaiRapor {
+  id          Int           @id @default(autoincrement())
+  siswa       SiswaProfile  @relation(fields: [siswaId], references: [id])
+  siswaId     Int
+
+  semester    Int
+  mataPelajaran String
+  nilai       Float
+}
+
+model Prestasi {
+  id          Int           @id @default(autoincrement())
+  siswa       SiswaProfile  @relation(fields: [siswaId], references: [id])
+  siswaId     Int
+
+  nama        String
+  tingkat     String?
+  tahun       Int?
+}
+
+model Prodi {
+  id          Int           @id @default(autoincrement())
+  nama        String
+  universitas String
+
+  pendaftaranProdi1 Pendaftaran[] @relation("Prodi1")
+  pendaftaranProdi2 Pendaftaran[] @relation("Prodi2")
+}
+
+model Pendaftaran {
+  id          Int           @id @default(autoincrement())
+  siswa       SiswaProfile  @relation(fields: [siswaId], references: [id])
+  siswaId     Int
+
+  prodi1      Prodi?        @relation("Prodi1", fields: [prodi1Id], references: [id])
+  prodi1Id    Int?
+
+  prodi2      Prodi?        @relation("Prodi2", fields: [prodi2Id], references: [id])
+  prodi2Id    Int?
+
+  prodi1Name  String
+  prodi2Name  String?
+
+  status      StatusPendaftaran @default(MENUNGGU)
+  dikirimKeKepsek Boolean       @default(false)
+  kepsekStatus     KepsekStatus?
+  kepsekAlasan     String?
+  createdAt   DateTime      @default(now())
+}
+
+model Dokumen {
+  id          Int           @id @default(autoincrement())
+  siswa       SiswaProfile  @relation(fields: [siswaId], references: [id])
+  siswaId     Int
+
+  jenis       String        // misal: RAPOR, SERTIFIKAT
+  filePath    String        // path file di server
+  uploadedAt  DateTime      @default(now())
+}
+
+model HomeContent {
+  id        Int       @id @default(autoincrement())
+  role      HomeRole  @unique
+  title     String
+  subtitle  String?
+  updatedAt DateTime  @updatedAt
+}
+
+enum UserRole {
+  SISWA
+  ADMIN
+  GURU_BK
+  KEPALA_SEKOLAH
+}
+
+enum HomeRole {
+  PUBLIC
+  SISWA
+  ADMIN
+  GURU_BK
+  KEPALA_SEKOLAH
+}
+
+enum StatusPendaftaran {
+  MENUNGGU
+  DITERIMA
+  DITOLAK
+}
+
+enum KepsekStatus {
+  BELUM_DITINJAU
+  DISETUJUI
+  DITOLAK
+}
+
+enum EligibilityStatus {
+  MENUNGGU_BK
+  MENUNGGU_KEPSEK
+  ELIGIBLE
+  TIDAK_ELIGIBLE
+}
