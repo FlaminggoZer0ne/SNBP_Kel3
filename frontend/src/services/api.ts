@@ -77,6 +77,8 @@ export interface PrestasiApiItem {
 export interface SimulasiResponse {
   skor: number
   kategori: 'SANGAT_TINGGI' | 'TINGGI' | 'CUKUP' | 'KURANG'
+  prodi1?: string
+  prodi2?: string
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
