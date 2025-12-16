@@ -47,22 +47,25 @@ function Login({ onLoginSuccess }: LoginProps) {
   }
 
   return (
-    <div className="page auth-page">
-      <h1>Masuk Portal SNBP</h1>
-      <form className="form auth-form" onSubmit={handleSubmit}>
-        <label>
-          Email
-          <input type="email" name="email" placeholder="nama@email" />
-        </label>
-        <label>
-          Password
-          <input type="password" name="password" placeholder="••••••" />
-        </label>
-        <button className="btn primary" type="submit">Masuk</button>
-      </form>
-      <p className="helper-text">
-        Belum punya akun? <Link to="/register">Daftar</Link>
-      </p>
+    <div className="login-page">
+      <div className="login-brand">SNBP</div>
+      <div className="login-blob">
+        <h1 className="login-title">Masuk Portal SNBP</h1>
+        <form className="form auth-form login-form" onSubmit={handleSubmit}>
+          <label>
+            Email
+            <input type="email" name="email" placeholder="nama@email" />
+          </label>
+          <label>
+            Password
+            <input type="password" name="password" placeholder="••••••" />
+          </label>
+          <button className="btn primary" type="submit">Masuk</button>
+        </form>
+        <p className="helper-text login-helper">
+          Belum punya akun? <Link to="/register">Daftar</Link>
+        </p>
+      </div>
     </div>
   )
 }

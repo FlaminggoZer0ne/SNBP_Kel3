@@ -42,7 +42,7 @@ function Beranda({ currentUserEmail, currentUserRole }: BerandaProps) {
     <div className="page beranda-page">
       <section className="hero">
         <div className="hero-text">
-          <h1>{homeContent?.title || 'Pendaftaran SNBP Sekolah'}</h1>
+          <h1>{homeContent?.title || 'Pendaftaran SNBP'}</h1>
           <p className="helper-text">
             {homeContent?.subtitle ||
               'Portal internal sekolah untuk mengelola nilai rapor, verifikasi Guru BK & Kepala Sekolah, hingga pemilihan universitas dan pengecekan hasil seleksi SNBP.'}

@@ -43,6 +43,7 @@ function App() {
   const navigate = useNavigate()
   const location = useLocation()
   const isStandalonePengumuman = location.pathname === '/cek-pengumuman-standalone'
+  const isLoginPage = location.pathname === '/login'
 
   const handleLoginSuccess = async (email: string, role?: UserRole) => {
     // Jika role undefined, anggap SISWA
@@ -112,11 +113,12 @@ function App() {
 
   return (
     <div className="layout">
-      <header className="navbar">
-        <div className="navbar-brand">
-          <Link to="/">SNBP</Link>
-        </div>
-        <nav className="navbar-nav">
+      {!isLoginPage && (
+        <header className="navbar">
+          <div className="navbar-brand">
+            <Link to="/">SNBP</Link>
+          </div>
+          <nav className="navbar-nav">
           <ul>
             <li>
               <Link to="/">Beranda</Link>
@@ -184,7 +186,8 @@ function App() {
             <Link to="/login">Login</Link>
           )}
         </div>
-      </header>
+        </header>
+      )}
       <main className="main-content">
         <Routes>
           <Route

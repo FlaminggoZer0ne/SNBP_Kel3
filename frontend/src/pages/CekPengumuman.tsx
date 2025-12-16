@@ -233,10 +233,10 @@ function CekPengumuman() {
             .snbp-logo-large {
                 font-size: 2rem;
                 font-weight: 900;
-                color: #00aeff;
+                color: #A07856;
                 margin-bottom: 1rem;
                 letter-spacing: 2px;
-                background: linear-gradient(to right, #00aeff, #ffffff);
+                background: linear-gradient(to right, #A07856, #ffffff);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
             }
@@ -255,7 +255,7 @@ function CekPengumuman() {
             }
             .snbp-form label {
                 display: block;
-                color: #00aeff;
+                color: #A07856;
                 font-size: 0.9rem;
                 font-weight: 600;
                 margin-bottom: 0.4rem;
@@ -271,7 +271,7 @@ function CekPengumuman() {
             }
             .btn-snbp-blue {
                 width: 100%;
-                background-color: #0099e6;
+                background-color: #A07856;
                 color: white;
                 border: none;
                 padding: 1rem;
@@ -282,7 +282,7 @@ function CekPengumuman() {
                 margin-top: 1rem;
             }
             .btn-snbp-blue:hover {
-                background-color: #007bb8;
+                background-color: #A07856;
             }
 
             /* --- RESULT CARD STYLE --- */
@@ -315,7 +315,7 @@ function CekPengumuman() {
                 position: relative;
             }
             .snbp-header.lulus {
-                background: linear-gradient(to right, #0056b3, #00aeff); /* Blue gradient */
+                background: linear-gradient(to right, #A07856, #A07856);
             }
             .snbp-header.tidak-lulus {
                 background: linear-gradient(to right, #c00, #ff4d4d); /* Red gradient */
@@ -363,7 +363,7 @@ function CekPengumuman() {
                 margin-bottom: 2rem;
             }
             .label-small {
-                color: #00aeff;
+                color: #A07856;
                 font-size: 0.8rem;
                 font-weight: 700;
                 margin-bottom: 0.2rem;
@@ -394,13 +394,13 @@ function CekPengumuman() {
             }
             .detail-item label {
                 display: block;
-                color: #00aeff;
+                color: #A07856;
                 font-size: 0.85rem;
                 font-weight: 700;
                 margin-bottom: 0.2rem;
             }
             .tidak-lulus .detail-item label {
-                color: #00aeff;
+                color: #A07856;
             }
             .detail-item p {
                 margin: 0;
