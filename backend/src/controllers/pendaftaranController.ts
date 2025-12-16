@@ -51,6 +51,17 @@ export const createPendaftaran = async (req: Request, res: Response) => {
       },
     });
 
+    // Cegah siswa membuat lebih dari satu pendaftaran
+    const existingPendaftaran = await prisma.pendaftaran.findFirst({
+      where: { siswaId: siswa.id },
+    });
+
+    if (existingPendaftaran) {
+      return res.status(400).json({
+        message: "Anda sudah memiliki pendaftaran SNBP. Pendaftaran tidak dapat diubah lagi.",
+      });
+    }
+
     const autoApprovedByKepsek = siswa.eligibilityStatus === 'ELIGIBLE'
 
     const p = await prisma.pendaftaran.create({
