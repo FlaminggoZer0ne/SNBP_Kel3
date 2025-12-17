@@ -1,5 +1,50 @@
 import nodemailer from "nodemailer";
 
+const sendViaBrevoApi = async (payload: {
+  to: string;
+  from: { name: string; email: string };
+  subject: string;
+  text: string;
+  html: string;
+}) => {
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    return false;
+  }
+
+  try {
+    const resp = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": apiKey,
+      },
+      body: JSON.stringify({
+        sender: payload.from,
+        to: [{ email: payload.to }],
+        subject: payload.subject,
+        textContent: payload.text,
+        htmlContent: payload.html,
+      }),
+    });
+
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => "");
+      console.error(
+        `[mailer] Brevo API failed. status=${resp.status} body=${body.slice(0, 500)}`
+      );
+      return true;
+    }
+
+    const data: any = await resp.json().catch(() => ({}));
+    console.log(`[mailer] Brevo API sent. messageId=${data?.messageId || "(no-id)"}`);
+    return true;
+  } catch (err) {
+    console.error("[mailer] Brevo API error", err);
+    return true;
+  }
+};
+
 const getTransporter = () => {
   const host = process.env.SMTP_HOST;
   const portRaw = process.env.SMTP_PORT;
@@ -43,11 +88,6 @@ export const sendSelectionResultEmail = async (payload: {
   nomorPendaftaran: string;
   prodi: string;
 }) => {
-  const transporter = getTransporter();
-  if (!transporter) {
-    return;
-  }
-
   const from = process.env.SMTP_FROM || process.env.SMTP_USER;
   const appUrl = process.env.APP_PUBLIC_URL || "";
 
@@ -55,6 +95,12 @@ export const sendSelectionResultEmail = async (payload: {
     console.warn("[mailer] SMTP_FROM/SMTP_USER empty, skip sending.");
     return;
   }
+
+  const fromEmailMatch = String(from).match(/<([^>]+)>/);
+  const fromEmail = fromEmailMatch ? fromEmailMatch[1] : String(from);
+  const fromName = fromEmailMatch
+    ? String(from).replace(fromEmailMatch[0], "").trim() || "SNBP"
+    : "SNBP";
 
   const greetingName = payload.nama ? payload.nama : payload.to;
   const subject =
@@ -93,6 +139,22 @@ export const sendSelectionResultEmail = async (payload: {
       ${cekLink ? `<p>Cek juga melalui web: <a href="${cekLink}">${cekLink}</a></p>` : ""}
     </div>
   `;
+
+  const apiHandled = await sendViaBrevoApi({
+    to: payload.to,
+    from: { name: fromName, email: fromEmail },
+    subject,
+    text,
+    html,
+  });
+  if (apiHandled) {
+    return;
+  }
+
+  const transporter = getTransporter();
+  if (!transporter) {
+    return;
+  }
 
   console.log(
     `[mailer] Sending selection email to=${payload.to} status=${payload.status} nomor=${payload.nomorPendaftaran}`
