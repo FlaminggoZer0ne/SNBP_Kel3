@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
+import { sendSelectionResultEmail } from "../services/mailer";
 
 // Fungsi helper untuk menghitung skor kecocokan (Simulasi AI sederhana)
 // Logika: Rata-rata nilai rapor + bobot random sedikit (simulasi persaingan)
@@ -90,7 +91,10 @@ export const prosesSeleksiAdmin = async (req: Request, res: Response) => {
     }
 
     try {
-        const pendaftaran = await prisma.pendaftaran.findUnique({ where: { id } });
+        const pendaftaran = await prisma.pendaftaran.findUnique({
+            where: { id },
+            include: { siswa: { include: { user: true } } },
+        });
         if (!pendaftaran) {
             return res.status(404).json({ message: "Pendaftaran tidak ditemukan" });
         }
@@ -110,6 +114,23 @@ export const prosesSeleksiAdmin = async (req: Request, res: Response) => {
             where: { id },
             data: updateData
         });
+
+        const nomorPendaftaran = `SNBP-${pendaftaran.createdAt.getFullYear()}-${String(pendaftaran.id).padStart(4, "0")}`
+        const prodi = (updateData.prodi1Name || updated.prodi1Name) as string
+        const emailSiswa = pendaftaran.siswa?.user?.email
+        const namaSiswa = pendaftaran.siswa?.nama
+
+        if (emailSiswa && (status === "DITERIMA" || status === "DITOLAK")) {
+            sendSelectionResultEmail({
+                to: emailSiswa,
+                nama: namaSiswa,
+                status,
+                nomorPendaftaran,
+                prodi,
+            }).catch((err) => {
+                console.error("Gagal mengirim email notifikasi seleksi", err);
+            });
+        }
 
         return res.json({ message: "Status seleksi berhasil disimpan", data: updated });
 
