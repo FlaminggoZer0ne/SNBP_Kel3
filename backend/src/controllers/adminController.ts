@@ -121,6 +121,9 @@ export const prosesSeleksiAdmin = async (req: Request, res: Response) => {
         const namaSiswa = pendaftaran.siswa?.nama
 
         if (emailSiswa && (status === "DITERIMA" || status === "DITOLAK")) {
+            console.log(
+                `[prosesSeleksiAdmin] Trigger email to=${emailSiswa} status=${status} pendaftaranId=${pendaftaran.id}`
+            );
             sendSelectionResultEmail({
                 to: emailSiswa,
                 nama: namaSiswa,
@@ -130,6 +133,10 @@ export const prosesSeleksiAdmin = async (req: Request, res: Response) => {
             }).catch((err) => {
                 console.error("Gagal mengirim email notifikasi seleksi", err);
             });
+        } else {
+            console.log(
+                `[prosesSeleksiAdmin] Skip email. emailSiswa=${emailSiswa ? "ada" : "tidak"} status=${status}`
+            );
         }
 
         return res.json({ message: "Status seleksi berhasil disimpan", data: updated });
