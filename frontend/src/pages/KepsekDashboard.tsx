@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import './pages.css'
 import type { SiswaItem } from '../services/api'
-import { apiKepsekGetSiswa, apiKepsekUpdateEligibility } from '../services/api'
+import { apiKepsekDownloadHasilSeleksiCsv, apiKepsekGetSiswa, apiKepsekUpdateEligibility } from '../services/api'
 
 function KepsekDashboard() {
   const [dataSiswa, setDataSiswa] = useState<SiswaItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [downloading, setDownloading] = useState(false)
 
   useEffect(() => {
     ;(async () => {
@@ -19,6 +20,29 @@ function KepsekDashboard() {
       }
     })()
   }, [])
+
+  const handleDownloadCsv = async () => {
+    if (downloading) return
+    setDownloading(true)
+    try {
+      const blob = await apiKepsekDownloadHasilSeleksiCsv()
+      const url = window.URL.createObjectURL(blob)
+
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'hasil-seleksi-snbp.csv'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+
+      window.URL.revokeObjectURL(url)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Gagal download CSV'
+      alert(message)
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   // --- Handler Siswa (Eligibility) ---
   const handleUpdateEligibility = async (
@@ -144,9 +168,10 @@ function KepsekDashboard() {
         <button
           type="button"
           className="btn secondary"
-          onClick={() => window.open('http://localhost:4000/admin/seleksi/download', '_blank')}
+          onClick={handleDownloadCsv}
+          disabled={downloading}
         >
-          Download Hasil Seleksi (CSV)
+          {downloading ? 'Mengunduh...' : 'Download Hasil Seleksi (CSV)'}
         </button>
       </section>
     </div>

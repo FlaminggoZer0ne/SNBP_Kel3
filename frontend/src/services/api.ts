@@ -81,7 +81,15 @@ export interface SimulasiResponse {
   prodi2?: string
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+const getJwtToken = (): string | null => {
+  try {
+    return localStorage.getItem('snbp_token')
+  } catch {
+    return null
+  }
+}
 
 // --- Home (Beranda Dinamis) ---
 export async function apiGetHomeContent(role: HomeRole): Promise<HomeContent> {
@@ -427,6 +435,26 @@ export async function apiKepsekGetSiswa(): Promise<SiswaItem[]> {
   const res = await fetch(`${API_BASE_URL}/kepsek/siswa`)
   const json = await res.json()
   return json.data || []
+}
+
+export async function apiKepsekDownloadHasilSeleksiCsv(): Promise<Blob> {
+  const token = getJwtToken()
+  const headers: Record<string, string> = {}
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const res = await fetch(`${API_BASE_URL}/admin/seleksi/download`, {
+    method: 'GET',
+    headers,
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(text || 'Gagal download CSV hasil seleksi')
+  }
+
+  return await res.blob()
 }
 
 export async function apiKepsekUpdatePendaftaran(
